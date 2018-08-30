@@ -1,2 +1,2 @@
 #### Database
-Il database è formato dalla sola entità session(_timestamp_, move, ideal)
+Il database è formato dalla sola entità session(__timestamp__, move, ideal)
