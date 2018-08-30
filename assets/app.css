@@ -1,0 +1,24 @@
+html {
+	background-color: #24292e;
+}
+
+body {
+	margin: 0px;
+	color: #fff;
+	font-family: Helvetica, sans-serif;
+	font-size: 13px
+}
+
+header {
+	padding: 16px;
+	text-align: center;
+}
+
+h1 {
+	margin: 0px
+}
+
+.flex-container {
+	display: grid;
+	grid-template-columns: 50% 50%
+}
