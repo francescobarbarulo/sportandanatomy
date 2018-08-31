@@ -18,7 +18,12 @@ h1 {
 	margin: 0px
 }
 
-.flex-container {
-	display: grid;
-	grid-template-columns: 50% 50%
+#session-select {
+	width: 30%;
+	margin: 0 auto;
+	color: #24292e
+}
+
+._dash-undo-redo {
+  display: none;
 }

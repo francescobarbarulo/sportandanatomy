@@ -9,7 +9,7 @@ class Database:
 
 		self.cursor = None
 
-		#print 'Connecting to %s on %s...' % (self.db, self.host)
+		print 'Connecting to %s on %s...' % (self.db, self.host)
 		self.conn = MySQLdb.connect(db=self.db, host=self.host, user=self.user, passwd=self.passwd)
 
 	def performQuery(self, query):
@@ -20,9 +20,9 @@ class Database:
 		self.cursor.execute(query)
 		self.conn.commit()
 
-		#print '%d rows affected' % (self.cursor.rowcount)
+		print '%d rows affected' % (self.cursor.rowcount)
 		return self.cursor
 
 	def closeConnection(self):
 		self.conn.close()
-		#print 'Closing db connection...'
+		print 'Closing db connection...'
