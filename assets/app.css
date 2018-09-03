@@ -1,27 +1,53 @@
 html {
-	background-color: #24292e;
+	background-color: #fff;
 }
 
 body {
 	margin: 0px;
-	color: #fff;
 	font-family: Helvetica, sans-serif;
 	font-size: 13px
 }
 
+ul {
+	margin: 0;
+	padding: 0;
+	list-style-type: none
+}
+
+h1, h2, h3, h4, h5, h6 {
+	margin: 0px;
+	font-size: inherit;
+	font-weight: inherit;
+}
+
 header {
-	padding: 16px;
+	padding: 12px;
+	font-size: 18px;
+	font-weight: normal;
 	text-align: center;
 }
 
-h1 {
-	margin: 0px
+header h1 {
+	font-weight: 300;
+	font-size: 32px;
 }
 
-#session-select {
-	width: 30%;
-	margin: 0 auto;
-	color: #24292e
+.overview .section {
+	margin: 12px;
+}
+
+.overview .table {
+	margin-top: 12px
+}
+
+#diff-graph {
+	margin-top: 12px
+}
+
+.footer {
+	text-align: center;
+	padding: 12px 0px 24px 0px;
+	color: #999;
 }
 
 ._dash-undo-redo {
