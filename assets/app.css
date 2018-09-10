@@ -1,5 +1,5 @@
 html {
-	background-color: #fff;
+	background-color: #f5f6f7;
 }
 
 body {
@@ -20,16 +20,39 @@ h1, h2, h3, h4, h5, h6 {
 	font-weight: inherit;
 }
 
+a {
+	color: #4183C4;
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
 header {
 	padding: 12px;
 	font-size: 18px;
 	font-weight: normal;
-	text-align: center;
+	background-color: #fff;
+	border-bottom: 1px solid #d1d5da
 }
 
 header h1 {
-	font-weight: 300;
-	font-size: 32px;
+	font-weight: 600;
+	font-size: 24px;
+	display: inline-block;
+	margin-right: 12px
+}
+
+header a {
+	margin: 0px 12px;
+}
+
+header .nav {
+	font-size: 13px;
+	letter-spacing: 1px;
+	float: right;
+	margin-top: 6px
 }
 
 .overview .section {
@@ -40,14 +63,19 @@ header h1 {
 	margin-top: 12px
 }
 
+.overview #select-patient {
+	margin-bottom: 12px
+}
+
 #diff-graph {
 	margin-top: 12px
 }
 
 .footer {
 	text-align: center;
-	padding: 12px 0px 24px 0px;
-	color: #999;
+	padding: 16px;
+	border-top: 1px solid #d1d5da;
+	background-color: #fff
 }
 
 ._dash-undo-redo {

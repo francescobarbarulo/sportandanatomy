@@ -7,25 +7,45 @@ import dash_core_components as dcc
 import dash_html_components as html
 import plotly.graph_objs as go
 from dash.dependencies import Input, Output
-from util import get_week_sessions, good_exercises, patients, cs
+from settings import get_exercise_settings
+from util import get_week_sessions, good_exercises, get_patients, get_exercises
 
 from app import app
 
 colors = ['#76D7C4', '#EC7063']
 
-layout = html.Div(children=[
+def serve_layout():
+    patients = get_patients().fetchall()
+    exercises = get_exercises().fetchall()
+
+    print patients
+
+    return html.Div(children=[
     html.Header(children=[
-        html.H1(children='Sport and Anatomy')
+        html.H1(children='Sport and Anatomy'),
+
+        html.Div(children=[
+            dcc.Link('PATIENTS', href="/patients"),
+            dcc.Link('EXERCISES', href="/exercises")
+        ], className='nav'),
     ]),
 
     html.Div(children=[
         html.Div(children=[
 
-            dcc.Dropdown(
-                id='select-patient',
-                options=[{'label': x['name'], 'value': x['patientId']} for x in patients],
-                placeholder='Select patient...'
-            ),
+            html.Div(children=[
+                dcc.Dropdown(
+                    id='select-patient',
+                    options=[{'label': x['name'], 'value': x['patientId']} for x in patients],
+                    placeholder='Select patient...'
+                ),
+
+                dcc.Dropdown(
+                    id='select-exercise',
+                    options=[{'label': x['name'], 'value': x['id']} for x in exercises],
+                    placeholder='Select exercise...'
+                )
+            ]),
 
             html.Div(children=[
 
@@ -90,13 +110,17 @@ layout = html.Div(children=[
     html.Div(id='intermediate-value', style={'display': 'none'})
 ])
 
+layout = serve_layout()
 
-@app.callback(Output('intermediate-value', 'children'), [Input('select-patient', 'value')])
-def get_data(patientId):
-    if patientId is None:
+'''
+@app.callback(Output('intermediate-value', 'children'), 
+    [Input('select-patient', 'value'), Input('select-exercise', 'value')])
+def get_data(patientId, exerciseId):
+    if patientId is None or exerciseId is None:
         return None
 
-    result = get_week_sessions(patientId).fetchall()
+    exercise_settings = get_exercise_settings(exerciseId)
+    result = get_week_sessions(patientId, exerciseId).fetchall()
 
     week_exercises =[]
     i = 0
@@ -110,7 +134,7 @@ def get_data(patientId):
 
         week_exercises.append(positions)
 
-    return json.dumps(week_exercises)
+    return json.dumps({'data': week_exercises, 'settings': {'recommended_sessions': exercise_settings.recommended_sessions, 'threshold': exercise_settings.threshold}})
 
 @app.callback(
     Output('frequency-graph', 'figure'),
@@ -133,7 +157,7 @@ def set_frequency_graph(jsonified_data):
 
     # numero di sessioni
     f_labels = ['Done', 'Missing']
-    f_values = [len(datasets), cs.session_number - len(datasets)] # da inserire quanti esercizi alla settimana
+    f_values = [len(datasets['data']), datasets['settings']['recommended_sessions'] - len(datasets['data'])] # da inserire quanti esercizi alla settimana
     f_trace = go.Pie(labels=f_labels, values=f_values, textinfo='value', textfont=dict(color='#fff'), hole=0.5, sort=False, marker=dict(colors=colors))
 
     return {
@@ -158,7 +182,7 @@ def set_goodness_graph(jsonified_data):
         return {
             'data': [go.Pie()],
             'layout': {
-                'title': 'Frequency',
+                'title': 'Goodness',
                 'plot_bgcolor': '#24292e',
                 'paper_bgcolor': '#24292e',
                 'font': {
@@ -169,9 +193,9 @@ def set_goodness_graph(jsonified_data):
 
     datasets = json.loads(jsonified_data)
     # bontà esercizi
-    num_good_exercises = good_exercises(datasets)
+    num_good_exercises = good_exercises(datasets['data'], datasets['settings']['threshold'])
     labels = ['Good', 'Bad']
-    values = [num_good_exercises, len(datasets) - num_good_exercises]
+    values = [num_good_exercises, len(datasets['data']) - num_good_exercises]
     trace = go.Pie(labels=labels, values=values, textinfo='value', textfont=dict(color='#fff'), hole=0.5, marker=dict(colors=colors))
  
     return {
@@ -196,7 +220,7 @@ def set_session_select(jsonified_data):
 
     datasets = json.loads(jsonified_data)
     # opzioni per dropdown menu
-    return [{'label': 'Session '+str(i+1), 'value': datasets[i][0]['timestamp']} for i in range(0, len(datasets))]
+    return [{'label': 'Session '+str(i+1), 'value': datasets['data'][i][0]['timestamp']} for i in range(0, len(datasets['data']))]
 
 @app.callback(
     Output('diff-graph', 'figure'),
@@ -223,7 +247,7 @@ def update_figure(jsonified_data, selected_session):
     datasets = json.loads(jsonified_data)
 
     session_to_show = None
-    for session in datasets:
+    for session in datasets['data']:
         if str(session[0]['timestamp']) == selected_session:
             session_to_show = session
             break
@@ -272,4 +296,4 @@ def update_figure(jsonified_data, selected_session):
             )
         )
     }
-
+'''

@@ -4,22 +4,21 @@ import datetime
 import time
 import csv
 import math
-from settings import current_settings as cs
 from database import Database
 		
-def get_week_sessions(patientId):
+def get_week_sessions(patientId, exerciseId):
     db = Database()
     queryText = '''SELECT *
-                   FROM session S
+                   FROM position P
                    		INNER JOIN
-                   		patient P ON S.patientId = P.patientId
-                   WHERE WEEK(DATE(S.timestamp), 1) = WEEK(CURRENT_DATE, 1)
-                   		AND P.patientId = %s''' % (patientId)
+                   		session S ON S.sessionId = P.sessionId
+                   WHERE WEEK(DATE(P.timestamp), 1) = WEEK(CURRENT_DATE, 1)
+                   		AND S.patientId = %d AND S.exerciseId = %d''' % (patientId, exerciseId)
     cursor = db.performQuery(queryText)
     db.closeConnection()
     return cursor
 
-def good_exercises(exercises):
+def good_exercises(exercises, threshold):
     count = 0
 
     for exercise in exercises:
@@ -33,7 +32,7 @@ def good_exercises(exercises):
 
         average_gap /= valid_datasets
 
-        if average_gap < cs.threshold:
+        if average_gap < threshold:
             count += 1
 
     return count
@@ -45,14 +44,43 @@ def get_patients():
 	db.closeConnection()
 	return cursor
 
+def get_exercises():
+	db = Database()
+	queryText = 'SELECT * FROM exercise'
+	cursor = db.performQuery(queryText)
+	db.closeConnection()
+	return cursor
+
+def new_session(patientId):
+	db = Database()
+	queryText = 'INSERT INTO session(patientId) VALUES (%d)' % (patientId)
+	cursor = db.performQuery(queryText)
+	db.closeConnection()
+	return cursor.lastrowid
+
+def new_exercise(name, sessions, threshold):
+	db = Database()
+	queryText = 'INSERT INTO exercise(name, recommended_sessions, threshold) VALUES ("%s", %d, %.2f)' % (name, sessions, threshold)
+	cursor = db.performQuery(queryText)
+	db.closeConnection()
+	return cursor.lastrowid
+
+def new_patient(name, birthday):
+	db = Database()
+	queryText = 'INSERT INTO patient(name, birthday) VALUES ("%s", "%s")' % (name, birthday)
+	cursor = db.performQuery(queryText)
+	db.closeConnection()
+	return cursor.lastrowid
+
 # inserimento dati
 
 def insert_rows():
 	db = Database()
 
-	for i in range(4, 8):
+	for i in range(1, 8):
 		data = []
 		with open('Soggetto'+str(i)+'.csv', 'rb') as csvfile:
+			sessionId = new_session(i)
 			lines = csv.reader(csvfile, delimiter=',', quotechar='"')
 			for row in lines: 
 				timestamp = row[0].replace(",",".")
@@ -72,7 +100,7 @@ def insert_rows():
 		started_at = datetime.datetime.now()
 		for record in data:
 			started_at = started_at + datetime.timedelta(microseconds=50000)
-			queryText = 'INSERT INTO session(angle, ideal, patientId, timestamp) VALUES(%.10f, %.10f, %d, "%s")' % (record['value'], record['ideal'], i, started_at)
+			queryText = 'INSERT INTO position (angle, ideal, sessionId, timestamp) VALUES (%.10f, %.10f, %d, "%s")' % (record['value'], record['ideal'], sessionId, started_at)
 			cursor = db.performQuery(queryText);
 
 		time.sleep(5);
@@ -80,23 +108,6 @@ def insert_rows():
 	db.closeConnection()
 
 #insert_rows()
-
-patients = get_patients().fetchall()
-
-'''
-i = 0
-
-while i < len(result):
-
-    start = result[i]
-    positions = []
-    
-    while i < len(result) and result[i]['timestamp'] < start['timestamp'] + datetime.timedelta(seconds=150):
-        positions.append(result[i])
-        i += 1
-
-    week_exercises.append(Exercise(positions))
-'''
 
 
 
