@@ -32,4 +32,4 @@ def serve_layout():
 		),
 	])
 
-layout = serve_layout()
+layout = serve_layout

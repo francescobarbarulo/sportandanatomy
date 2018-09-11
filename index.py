@@ -22,11 +22,11 @@ app.layout = serve_layout
               [Input('url', 'pathname')])
 def display_page(pathname):
     if pathname == '/':
-        return dashboard.layout
+        return dashboard.layout()
     elif pathname == '/exercises':
-        return exercises.layout
+        return exercises.layout()
     elif pathname == '/patients':
-        return patients.layout
+        return patients.layout()
     elif pathname == '/new-exercise':
     	return new_exercise.layout
     elif pathname == '/new-patient':

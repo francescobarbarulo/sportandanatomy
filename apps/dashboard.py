@@ -110,7 +110,7 @@ def serve_layout():
     html.Div(id='intermediate-value', style={'display': 'none'})
 ])
 
-layout = serve_layout()
+layout = serve_layout
 
 @app.callback(Output('intermediate-value', 'children'), 
     [Input('select-patient', 'value'), Input('select-exercise', 'value')])
