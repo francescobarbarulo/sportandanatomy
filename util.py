@@ -51,9 +51,9 @@ def get_exercises():
 	db.closeConnection()
 	return cursor
 
-def new_session(patientId):
+def new_session(patientId, exerciseId):
 	db = Database()
-	queryText = 'INSERT INTO session(patientId) VALUES (%d)' % (patientId)
+	queryText = 'INSERT INTO session(patientId, exerciseId) VALUES (%d, %d)' % (patientId, exerciseId)
 	cursor = db.performQuery(queryText)
 	db.closeConnection()
 	return cursor.lastrowid
@@ -80,7 +80,7 @@ def insert_rows():
 	for i in range(1, 8):
 		data = []
 		with open('Soggetto'+str(i)+'.csv', 'rb') as csvfile:
-			sessionId = new_session(i)
+			sessionId = new_session(i, 1)
 			lines = csv.reader(csvfile, delimiter=',', quotechar='"')
 			for row in lines: 
 				timestamp = row[0].replace(",",".")

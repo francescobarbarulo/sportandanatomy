@@ -112,7 +112,6 @@ def serve_layout():
 
 layout = serve_layout()
 
-'''
 @app.callback(Output('intermediate-value', 'children'), 
     [Input('select-patient', 'value'), Input('select-exercise', 'value')])
 def get_data(patientId, exerciseId):
@@ -296,4 +295,3 @@ def update_figure(jsonified_data, selected_session):
             )
         )
     }
-'''
